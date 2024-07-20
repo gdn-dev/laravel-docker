@@ -44,8 +44,7 @@ jobs:
         with:
           push: true
           platforms: linux/amd64
-          context: .
-          file: src/Dockerfile
+          context: src/
           labels: ${{ steps.meta.outputs.labels }}
           tags: ghcr.io/gdn-dev/laravel-docker:8.2
           cache-from: type=gha
