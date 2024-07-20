@@ -15,7 +15,8 @@ jobs:
       id-token: write
 
     env:
-      REGISTRY: ghcr.io
+      DOCKER_USERNAME: umarhadi
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       IMAGE_NAME: ${{ github.repository }}
 
     steps:
@@ -25,27 +26,19 @@ jobs:
       - name: Setup Docker buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log into registry ${{ env.REGISTRY }}
+      - name: Log into Docker Hub
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@master
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          username: ${{ env.DOCKER_USERNAME }}
+          password: ${{ env.DOCKER_PASSWORD }}
 
       - name: Build and push Docker image
         id: build-and-push
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           push: true
           platforms: linux/amd64
           context: src/
-          labels: ${{ steps.meta.outputs.labels }}
-          tags: ghcr.io/gdn-dev/laravel-docker:8.2
+          tags: ${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:8.2
           cache-from: type=gha
           cache-to: type=gha,mode=max
